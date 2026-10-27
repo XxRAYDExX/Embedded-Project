@@ -63,6 +63,7 @@ class TicTacToeGUI:
         self.current_turn = "X"
 
         self.board = "........."
+        self.history_var = tk.StringVar(value="Move history: (none)")
 
         self.cells = []
 
@@ -586,6 +587,25 @@ class TicTacToeGUI:
             pady=3
         )
 
+        self.undo_button = ttk.Button(
+            controls_panel,
+            text="Undo Last Move",
+            command=self.undo_move,
+            style="Normal.TButton"
+        )
+        self.undo_button.grid(
+            row=4, column=0, sticky="ew", pady=3
+        )
+
+        self.history_label = ttk.Label(
+            controls_panel,
+            textvariable=self.history_var,
+            wraplength=220
+        )
+        self.history_label.grid(
+            row=5, column=0, sticky="ew", pady=(8, 3)
+        )
+
     # ==================================================
     # DRAWING X AND O
     # ==================================================
@@ -960,6 +980,12 @@ class TicTacToeGUI:
             )
         )
 
+        self.undo_button.configure(
+            state=("normal" if self.connected and
+                   self.history_var.get() != "Move history: (none)"
+                   else "disabled")
+        )
+
         self.disconnect_button.configure(
             state=(
                 "normal"
@@ -1031,6 +1057,7 @@ class TicTacToeGUI:
                 response
             )
 
+            self.refresh_history()
             self.update_controls()
 
             self.root.after(
@@ -1103,6 +1130,7 @@ class TicTacToeGUI:
             )
 
             self.update_controls()
+            self.refresh_history()
 
         elif response != "EVENT:NONE":
             self.handle_response(
@@ -1120,13 +1148,38 @@ class TicTacToeGUI:
     # ==================================================
 
     def new_game(self):
-        response = self.send(
-            "NEW"
-        )
+        response = self.send("NEW")
+        self.handle_response(response)
+        if response and response.startswith("OK:BOARD:"):
+            self.refresh_history()
 
-        self.handle_response(
-            response
-        )
+    def refresh_history(self):
+        if not self.connected:
+            self.history_var.set("Move history: (none)")
+            return
+        response = self.send("HISTORY")
+        if response and response.startswith("HISTORY:"):
+            moves = response[len("HISTORY:"):]
+            self.history_var.set(
+                "Move history: " + ("(none)" if moves == "EMPTY" else moves)
+            )
+        elif response == "NACK:NOGAME":
+            self.history_var.set("Move history: (none)")
+        self.update_controls()
+
+    def undo_move(self):
+        if not self.connected:
+            return
+        response = self.send("UNDO")
+        if response is None:
+            return
+        if response.startswith("OK:BOARD:"):
+            self.game_active = True
+            self.handle_response(response)
+            self.message_var.set("Last move undone by STM32.")
+            self.refresh_history()
+        else:
+            self.handle_response(response)
 
     def on_cell_clicked(
         self,
@@ -1146,9 +1199,11 @@ class TicTacToeGUI:
             command
         )
 
-        self.handle_response(
-            response
-        )
+        self.handle_response(response)
+        if response and (response.startswith("OK:BOARD:") or
+                         response.startswith("WIN:") or
+                         response.startswith("DRAW:")):
+            self.refresh_history()
 
     # ==================================================
     # DISCONNECT
