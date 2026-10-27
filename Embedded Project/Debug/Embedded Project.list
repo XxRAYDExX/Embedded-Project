@@ -252,34 +252,20 @@ Disassembly of section .text:
  8000242:	46c0      	nop			@ (mov r8, r8)
 
 08000244 <Send_Response>:
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-static void Send_Response(const char *response)
-{
  8000244:	b580      	push	{r7, lr}
  8000246:	b082      	sub	sp, #8
  8000248:	af00      	add	r7, sp, #0
  800024a:	6078      	str	r0, [r7, #4]
-    HAL_UART_Transmit(
-        &huart1,
-        (uint8_t *)response,
-        strlen(response),
  800024c:	687b      	ldr	r3, [r7, #4]
  800024e:	0018      	movs	r0, r3
  8000250:	f7ff ff64 	bl	800011c <strlen>
  8000254:	0003      	movs	r3, r0
-    HAL_UART_Transmit(
  8000256:	b29a      	uxth	r2, r3
  8000258:	2301      	movs	r3, #1
  800025a:	425b      	negs	r3, r3
  800025c:	6879      	ldr	r1, [r7, #4]
  800025e:	4803      	ldr	r0, [pc, #12]	@ (800026c <Send_Response+0x28>)
  8000260:	f001 fe36 	bl	8001ed0 <HAL_UART_Transmit>
-        HAL_MAX_DELAY
-    );
-}
  8000264:	46c0      	nop			@ (mov r8, r8)
  8000266:	46bd      	mov	sp, r7
  8000268:	b002      	add	sp, #8
@@ -287,17 +273,10 @@ static void Send_Response(const char *response)
  800026c:	20000034 	.word	0x20000034
 
 08000270 <Send_Board_Response>:
-
-
-static void Send_Board_Response(const char *prefix)
-{
  8000270:	b5b0      	push	{r4, r5, r7, lr}
  8000272:	b08c      	sub	sp, #48	@ 0x30
  8000274:	af00      	add	r7, sp, #0
  8000276:	6078      	str	r0, [r7, #4]
-    char response[32];
-
-    uint8_t prefix_length = (uint8_t)strlen(prefix);
  8000278:	687b      	ldr	r3, [r7, #4]
  800027a:	0018      	movs	r0, r3
  800027c:	f7ff ff4e 	bl	800011c <strlen>
@@ -305,8 +284,6 @@ static void Send_Board_Response(const char *prefix)
  8000282:	242f      	movs	r4, #47	@ 0x2f
  8000284:	193b      	adds	r3, r7, r4
  8000286:	701a      	strb	r2, [r3, #0]
-
-    memcpy(
  8000288:	193b      	adds	r3, r7, r4
  800028a:	781a      	ldrb	r2, [r3, #0]
  800028c:	6879      	ldr	r1, [r7, #4]
@@ -314,12 +291,6 @@ static void Send_Board_Response(const char *prefix)
  8000290:	197b      	adds	r3, r7, r5
  8000292:	0018      	movs	r0, r3
  8000294:	f002 fb3e 	bl	8002914 <memcpy>
-        response,
-        prefix,
-        prefix_length
-    );
-
-    memcpy(
  8000298:	193b      	adds	r3, r7, r4
  800029a:	781b      	ldrb	r3, [r3, #0]
  800029c:	197a      	adds	r2, r7, r5
@@ -330,40 +301,27 @@ static void Send_Board_Response(const char *prefix)
  80002a6:	2309      	movs	r3, #9
  80002a8:	001a      	movs	r2, r3
  80002aa:	f002 fb33 	bl	8002914 <memcpy>
-        response + prefix_length,
-        board,
-        9
-    );
-
-    response[prefix_length + 9] = '\r';
  80002ae:	193b      	adds	r3, r7, r4
  80002b0:	781b      	ldrb	r3, [r3, #0]
  80002b2:	3309      	adds	r3, #9
  80002b4:	197a      	adds	r2, r7, r5
  80002b6:	210d      	movs	r1, #13
  80002b8:	54d1      	strb	r1, [r2, r3]
-
-    response[prefix_length + 10] = '\n';
  80002ba:	193b      	adds	r3, r7, r4
  80002bc:	781b      	ldrb	r3, [r3, #0]
  80002be:	330a      	adds	r3, #10
  80002c0:	197a      	adds	r2, r7, r5
  80002c2:	210a      	movs	r1, #10
  80002c4:	54d1      	strb	r1, [r2, r3]
-
-    response[prefix_length + 11] = '\0';
  80002c6:	193b      	adds	r3, r7, r4
  80002c8:	781b      	ldrb	r3, [r3, #0]
  80002ca:	330b      	adds	r3, #11
  80002cc:	197a      	adds	r2, r7, r5
  80002ce:	2100      	movs	r1, #0
  80002d0:	54d1      	strb	r1, [r2, r3]
-
-    Send_Response(response);
  80002d2:	197b      	adds	r3, r7, r5
  80002d4:	0018      	movs	r0, r3
  80002d6:	f7ff ffb5 	bl	8000244 <Send_Response>
-}
  80002da:	46c0      	nop			@ (mov r8, r8)
  80002dc:	46bd      	mov	sp, r7
  80002de:	b00c      	add	sp, #48	@ 0x30
@@ -372,26 +330,18 @@ static void Send_Board_Response(const char *prefix)
  80002e4:	20000000 	.word	0x20000000
 
 080002e8 <Reset_Board>:
-
-
-static void Reset_Board(void)
-{
  80002e8:	b580      	push	{r7, lr}
  80002ea:	b082      	sub	sp, #8
  80002ec:	af00      	add	r7, sp, #0
-    for (uint8_t i = 0; i < 9; i++)
  80002ee:	1dfb      	adds	r3, r7, #7
  80002f0:	2200      	movs	r2, #0
  80002f2:	701a      	strb	r2, [r3, #0]
  80002f4:	e009      	b.n	800030a <Reset_Board+0x22>
-    {
-        board[i] = '.';
  80002f6:	1dfb      	adds	r3, r7, #7
  80002f8:	781b      	ldrb	r3, [r3, #0]
  80002fa:	4a09      	ldr	r2, [pc, #36]	@ (8000320 <Reset_Board+0x38>)
  80002fc:	212e      	movs	r1, #46	@ 0x2e
  80002fe:	54d1      	strb	r1, [r2, r3]
-    for (uint8_t i = 0; i < 9; i++)
  8000300:	1dfb      	adds	r3, r7, #7
  8000302:	781a      	ldrb	r2, [r3, #0]
  8000304:	1dfb      	adds	r3, r7, #7
@@ -401,13 +351,9 @@ static void Reset_Board(void)
  800030c:	781b      	ldrb	r3, [r3, #0]
  800030e:	2b08      	cmp	r3, #8
  8000310:	d9f1      	bls.n	80002f6 <Reset_Board+0xe>
-    }
-
-    current_turn = 'X';
  8000312:	4b04      	ldr	r3, [pc, #16]	@ (8000324 <Reset_Board+0x3c>)
  8000314:	2258      	movs	r2, #88	@ 0x58
  8000316:	701a      	strb	r2, [r3, #0]
-}
  8000318:	46c0      	nop			@ (mov r8, r8)
  800031a:	46bd      	mov	sp, r7
  800031c:	b002      	add	sp, #8
@@ -416,42 +362,23 @@ static void Reset_Board(void)
  8000324:	20000009 	.word	0x20000009
 
 08000328 <Local_New_Game>:
-
-
-static void Local_New_Game(void)
-{
  8000328:	b580      	push	{r7, lr}
  800032a:	af00      	add	r7, sp, #0
-    Reset_Board();
  800032c:	f7ff ffdc 	bl	80002e8 <Reset_Board>
-
-    if (connected)
  8000330:	4b08      	ldr	r3, [pc, #32]	@ (8000354 <Local_New_Game+0x2c>)
  8000332:	781b      	ldrb	r3, [r3, #0]
  8000334:	2b00      	cmp	r3, #0
  8000336:	d006      	beq.n	8000346 <Local_New_Game+0x1e>
-    {
-        server_state = SERVER_IN_PROGRESS;
  8000338:	4b07      	ldr	r3, [pc, #28]	@ (8000358 <Local_New_Game+0x30>)
  800033a:	2201      	movs	r2, #1
  800033c:	701a      	strb	r2, [r3, #0]
-
-        local_reset_pending = 1;
  800033e:	4b07      	ldr	r3, [pc, #28]	@ (800035c <Local_New_Game+0x34>)
  8000340:	2201      	movs	r2, #1
  8000342:	701a      	strb	r2, [r3, #0]
-
-    else
-    {
-        server_state = SERVER_IDLE;
-    }
-}
  8000344:	e002      	b.n	800034c <Local_New_Game+0x24>
-        server_state = SERVER_IDLE;
  8000346:	4b04      	ldr	r3, [pc, #16]	@ (8000358 <Local_New_Game+0x30>)
  8000348:	2200      	movs	r2, #0
  800034a:	701a      	strb	r2, [r3, #0]
-}
  800034c:	46c0      	nop			@ (mov r8, r8)
  800034e:	46bd      	mov	sp, r7
  8000350:	bd80      	pop	{r7, pc}
@@ -461,30 +388,15 @@ static void Local_New_Game(void)
  800035c:	20000109 	.word	0x20000109
 
 08000360 <Update_Hardware>:
-
-
-static void Update_Hardware(void)
-{
  8000360:	b590      	push	{r4, r7, lr}
  8000362:	b083      	sub	sp, #12
  8000364:	af00      	add	r7, sp, #0
-    GPIO_PinState button_state;
-
-    uint32_t now = HAL_GetTick();
  8000366:	f000 fd9f 	bl	8000ea8 <HAL_GetTick>
  800036a:	0003      	movs	r3, r0
  800036c:	607b      	str	r3, [r7, #4]
-
-    uint16_t all_leds =
  800036e:	1cbb      	adds	r3, r7, #2
  8000370:	22ff      	movs	r2, #255	@ 0xff
  8000372:	801a      	strh	r2, [r3, #0]
-     *
-     * Released = HIGH
-     * Pressed  = LOW
-     */
-    button_state =
-        HAL_GPIO_ReadPin(
  8000374:	1c7c      	adds	r4, r7, #1
  8000376:	2390      	movs	r3, #144	@ 0x90
  8000378:	05db      	lsls	r3, r3, #23
@@ -493,109 +405,65 @@ static void Update_Hardware(void)
  800037e:	f000 ffc1 	bl	8001304 <HAL_GPIO_ReadPin>
  8000382:	0003      	movs	r3, r0
  8000384:	7023      	strb	r3, [r4, #0]
-
-
-    /*
-     * Detect the physical button press.
-     */
-    if (button_state == GPIO_PIN_RESET &&
  8000386:	1c7b      	adds	r3, r7, #1
  8000388:	781b      	ldrb	r3, [r3, #0]
  800038a:	2b00      	cmp	r3, #0
  800038c:	d10e      	bne.n	80003ac <Update_Hardware+0x4c>
-        previous_button_state == GPIO_PIN_SET)
  800038e:	4b28      	ldr	r3, [pc, #160]	@ (8000430 <Update_Hardware+0xd0>)
  8000390:	781b      	ldrb	r3, [r3, #0]
-    if (button_state == GPIO_PIN_RESET &&
  8000392:	2b01      	cmp	r3, #1
  8000394:	d10a      	bne.n	80003ac <Update_Hardware+0x4c>
-    {
-        /*
-         * Basic debounce protection.
-         */
-        if ((now - last_button_time) >= 200U)
  8000396:	4b27      	ldr	r3, [pc, #156]	@ (8000434 <Update_Hardware+0xd4>)
  8000398:	681b      	ldr	r3, [r3, #0]
  800039a:	687a      	ldr	r2, [r7, #4]
  800039c:	1ad3      	subs	r3, r2, r3
  800039e:	2bc7      	cmp	r3, #199	@ 0xc7
  80003a0:	d904      	bls.n	80003ac <Update_Hardware+0x4c>
-        {
-            Local_New_Game();
  80003a2:	f7ff ffc1 	bl	8000328 <Local_New_Game>
-
-            last_button_time = now;
  80003a6:	4b23      	ldr	r3, [pc, #140]	@ (8000434 <Update_Hardware+0xd4>)
  80003a8:	687a      	ldr	r2, [r7, #4]
  80003aa:	601a      	str	r2, [r3, #0]
-        }
-    }
-
-
-    previous_button_state =
  80003ac:	4b20      	ldr	r3, [pc, #128]	@ (8000430 <Update_Hardware+0xd0>)
  80003ae:	1c7a      	adds	r2, r7, #1
  80003b0:	7812      	ldrb	r2, [r2, #0]
  80003b2:	701a      	strb	r2, [r3, #0]
-    /*
-     * IDLE:
-     *
-     * All LEDs are OFF.
-     */
-    if (server_state == SERVER_IDLE)
  80003b4:	4b20      	ldr	r3, [pc, #128]	@ (8000438 <Update_Hardware+0xd8>)
  80003b6:	781b      	ldrb	r3, [r3, #0]
  80003b8:	2b00      	cmp	r3, #0
  80003ba:	d107      	bne.n	80003cc <Update_Hardware+0x6c>
-    {
-        HAL_GPIO_WritePin(
  80003bc:	1cbb      	adds	r3, r7, #2
  80003be:	881b      	ldrh	r3, [r3, #0]
  80003c0:	481e      	ldr	r0, [pc, #120]	@ (800043c <Update_Hardware+0xdc>)
  80003c2:	2200      	movs	r2, #0
  80003c4:	0019      	movs	r1, r3
  80003c6:	f000 ffba 	bl	800133e <HAL_GPIO_WritePin>
-            );
-
-            last_led_toggle = now;
-        }
-    }
-}
  80003ca:	e02d      	b.n	8000428 <Update_Hardware+0xc8>
-    else if (server_state == SERVER_IN_PROGRESS)
  80003cc:	4b1a      	ldr	r3, [pc, #104]	@ (8000438 <Update_Hardware+0xd8>)
  80003ce:	781b      	ldrb	r3, [r3, #0]
  80003d0:	2b01      	cmp	r3, #1
  80003d2:	d113      	bne.n	80003fc <Update_Hardware+0x9c>
-        if (current_turn == 'X')
  80003d4:	4b1a      	ldr	r3, [pc, #104]	@ (8000440 <Update_Hardware+0xe0>)
  80003d6:	781b      	ldrb	r3, [r3, #0]
  80003d8:	2b58      	cmp	r3, #88	@ 0x58
  80003da:	d107      	bne.n	80003ec <Update_Hardware+0x8c>
-            HAL_GPIO_WritePin(
  80003dc:	1cbb      	adds	r3, r7, #2
  80003de:	881b      	ldrh	r3, [r3, #0]
  80003e0:	4816      	ldr	r0, [pc, #88]	@ (800043c <Update_Hardware+0xdc>)
  80003e2:	2201      	movs	r2, #1
  80003e4:	0019      	movs	r1, r3
  80003e6:	f000 ffaa 	bl	800133e <HAL_GPIO_WritePin>
-}
  80003ea:	e01d      	b.n	8000428 <Update_Hardware+0xc8>
-            HAL_GPIO_WritePin(
  80003ec:	1cbb      	adds	r3, r7, #2
  80003ee:	881b      	ldrh	r3, [r3, #0]
  80003f0:	4812      	ldr	r0, [pc, #72]	@ (800043c <Update_Hardware+0xdc>)
  80003f2:	2200      	movs	r2, #0
  80003f4:	0019      	movs	r1, r3
  80003f6:	f000 ffa2 	bl	800133e <HAL_GPIO_WritePin>
-}
  80003fa:	e015      	b.n	8000428 <Update_Hardware+0xc8>
-    else if (server_state == SERVER_GAME_OVER)
  80003fc:	4b0e      	ldr	r3, [pc, #56]	@ (8000438 <Update_Hardware+0xd8>)
  80003fe:	781b      	ldrb	r3, [r3, #0]
  8000400:	2b02      	cmp	r3, #2
  8000402:	d111      	bne.n	8000428 <Update_Hardware+0xc8>
-        if ((now - last_led_toggle) >= 300U)
  8000404:	4b0f      	ldr	r3, [pc, #60]	@ (8000444 <Update_Hardware+0xe4>)
  8000406:	681b      	ldr	r3, [r3, #0]
  8000408:	687a      	ldr	r2, [r7, #4]
@@ -604,18 +472,15 @@ static void Update_Hardware(void)
  800040e:	005b      	lsls	r3, r3, #1
  8000410:	429a      	cmp	r2, r3
  8000412:	d309      	bcc.n	8000428 <Update_Hardware+0xc8>
-            HAL_GPIO_TogglePin(
  8000414:	1cbb      	adds	r3, r7, #2
  8000416:	881b      	ldrh	r3, [r3, #0]
  8000418:	4a08      	ldr	r2, [pc, #32]	@ (800043c <Update_Hardware+0xdc>)
  800041a:	0019      	movs	r1, r3
  800041c:	0010      	movs	r0, r2
  800041e:	f000 ffab 	bl	8001378 <HAL_GPIO_TogglePin>
-            last_led_toggle = now;
  8000422:	4b08      	ldr	r3, [pc, #32]	@ (8000444 <Update_Hardware+0xe4>)
  8000424:	687a      	ldr	r2, [r7, #4]
  8000426:	601a      	str	r2, [r3, #0]
-}
  8000428:	46c0      	nop			@ (mov r8, r8)
  800042a:	46bd      	mov	sp, r7
  800042c:	b003      	add	sp, #12
@@ -628,29 +493,17 @@ static void Update_Hardware(void)
  8000444:	20000110 	.word	0x20000110
 
 08000448 <Has_Won>:
-
-
-static uint8_t Has_Won(char player)
-{
  8000448:	b5f0      	push	{r4, r5, r6, r7, lr}
  800044a:	b085      	sub	sp, #20
  800044c:	af00      	add	r7, sp, #0
  800044e:	0002      	movs	r2, r0
  8000450:	1dfb      	adds	r3, r7, #7
  8000452:	701a      	strb	r2, [r3, #0]
-        {0, 4, 8},
-        {2, 4, 6}
-    };
-
-
-    for (uint8_t i = 0; i < 8; i++)
  8000454:	230f      	movs	r3, #15
  8000456:	18fb      	adds	r3, r7, r3
  8000458:	2200      	movs	r2, #0
  800045a:	701a      	strb	r2, [r3, #0]
  800045c:	e042      	b.n	80004e4 <Has_Won+0x9c>
-    {
-        uint8_t a = win_lines[i][0];
  800045e:	240f      	movs	r4, #15
  8000460:	193b      	adds	r3, r7, r4
  8000462:	781a      	ldrb	r2, [r3, #0]
@@ -662,8 +515,6 @@ static uint8_t Has_Won(char player)
  800046e:	189b      	adds	r3, r3, r2
  8000470:	5c1b      	ldrb	r3, [r3, r0]
  8000472:	700b      	strb	r3, [r1, #0]
-
-        uint8_t b = win_lines[i][1];
  8000474:	193b      	adds	r3, r7, r4
  8000476:	781a      	ldrb	r2, [r3, #0]
  8000478:	260d      	movs	r6, #13
@@ -676,8 +527,6 @@ static uint8_t Has_Won(char player)
  8000486:	3301      	adds	r3, #1
  8000488:	781b      	ldrb	r3, [r3, #0]
  800048a:	700b      	strb	r3, [r1, #0]
-
-        uint8_t c = win_lines[i][2];
  800048c:	193b      	adds	r3, r7, r4
  800048e:	781a      	ldrb	r2, [r3, #0]
  8000490:	240c      	movs	r4, #12
@@ -690,9 +539,6 @@ static uint8_t Has_Won(char player)
  800049e:	3302      	adds	r3, #2
  80004a0:	781b      	ldrb	r3, [r3, #0]
  80004a2:	700b      	strb	r3, [r1, #0]
-
-
-        if (board[a] == player &&
  80004a4:	197b      	adds	r3, r7, r5
  80004a6:	781b      	ldrb	r3, [r3, #0]
  80004a8:	4a14      	ldr	r2, [pc, #80]	@ (80004fc <Has_Won+0xb4>)
@@ -701,31 +547,24 @@ static uint8_t Has_Won(char player)
  80004ae:	7812      	ldrb	r2, [r2, #0]
  80004b0:	429a      	cmp	r2, r3
  80004b2:	d111      	bne.n	80004d8 <Has_Won+0x90>
-            board[b] == player &&
  80004b4:	19bb      	adds	r3, r7, r6
  80004b6:	781b      	ldrb	r3, [r3, #0]
  80004b8:	4a10      	ldr	r2, [pc, #64]	@ (80004fc <Has_Won+0xb4>)
  80004ba:	5cd3      	ldrb	r3, [r2, r3]
-        if (board[a] == player &&
  80004bc:	1dfa      	adds	r2, r7, #7
  80004be:	7812      	ldrb	r2, [r2, #0]
  80004c0:	429a      	cmp	r2, r3
  80004c2:	d109      	bne.n	80004d8 <Has_Won+0x90>
-            board[c] == player)
  80004c4:	193b      	adds	r3, r7, r4
  80004c6:	781b      	ldrb	r3, [r3, #0]
  80004c8:	4a0c      	ldr	r2, [pc, #48]	@ (80004fc <Has_Won+0xb4>)
  80004ca:	5cd3      	ldrb	r3, [r2, r3]
-            board[b] == player &&
  80004cc:	1dfa      	adds	r2, r7, #7
  80004ce:	7812      	ldrb	r2, [r2, #0]
  80004d0:	429a      	cmp	r2, r3
  80004d2:	d101      	bne.n	80004d8 <Has_Won+0x90>
-        {
-            return 1;
  80004d4:	2301      	movs	r3, #1
  80004d6:	e00b      	b.n	80004f0 <Has_Won+0xa8>
-    for (uint8_t i = 0; i < 8; i++)
  80004d8:	210f      	movs	r1, #15
  80004da:	187b      	adds	r3, r7, r1
  80004dc:	781a      	ldrb	r2, [r3, #0]
@@ -737,13 +576,7 @@ static uint8_t Has_Won(char player)
  80004e8:	781b      	ldrb	r3, [r3, #0]
  80004ea:	2b07      	cmp	r3, #7
  80004ec:	d9b7      	bls.n	800045e <Has_Won+0x16>
-        }
-    }
-
-
-    return 0;
  80004ee:	2300      	movs	r3, #0
-}
  80004f0:	0018      	movs	r0, r3
  80004f2:	46bd      	mov	sp, r7
  80004f4:	b005      	add	sp, #20
@@ -752,31 +585,21 @@ static uint8_t Has_Won(char player)
  80004fc:	20000000 	.word	0x20000000
 
 08000500 <Is_Draw>:
-
-
-static uint8_t Is_Draw(void)
-{
  8000500:	b580      	push	{r7, lr}
  8000502:	b082      	sub	sp, #8
  8000504:	af00      	add	r7, sp, #0
-    for (uint8_t i = 0; i < 9; i++)
  8000506:	1dfb      	adds	r3, r7, #7
  8000508:	2200      	movs	r2, #0
  800050a:	701a      	strb	r2, [r3, #0]
  800050c:	e00c      	b.n	8000528 <Is_Draw+0x28>
-    {
-        if (board[i] == '.')
  800050e:	1dfb      	adds	r3, r7, #7
  8000510:	781b      	ldrb	r3, [r3, #0]
  8000512:	4a0a      	ldr	r2, [pc, #40]	@ (800053c <Is_Draw+0x3c>)
  8000514:	5cd3      	ldrb	r3, [r2, r3]
  8000516:	2b2e      	cmp	r3, #46	@ 0x2e
  8000518:	d101      	bne.n	800051e <Is_Draw+0x1e>
-        {
-            return 0;
  800051a:	2300      	movs	r3, #0
  800051c:	e009      	b.n	8000532 <Is_Draw+0x32>
-    for (uint8_t i = 0; i < 9; i++)
  800051e:	1dfb      	adds	r3, r7, #7
  8000520:	781a      	ldrb	r2, [r3, #0]
  8000522:	1dfb      	adds	r3, r7, #7
@@ -786,13 +609,7 @@ static uint8_t Is_Draw(void)
  800052a:	781b      	ldrb	r3, [r3, #0]
  800052c:	2b08      	cmp	r3, #8
  800052e:	d9ee      	bls.n	800050e <Is_Draw+0xe>
-        }
-    }
-
-
-    return 1;
  8000530:	2301      	movs	r3, #1
-}
  8000532:	0018      	movs	r0, r3
  8000534:	46bd      	mov	sp, r7
  8000536:	b002      	add	sp, #8
@@ -801,12 +618,6 @@ static uint8_t Is_Draw(void)
  800053c:	20000000 	.word	0x20000000
 
 08000540 <Parse_Move>:
-    const char *command,
-    int *index,
-    char *player,
-    uint8_t *has_player
-)
-{
  8000540:	b580      	push	{r7, lr}
  8000542:	b088      	sub	sp, #32
  8000544:	af00      	add	r7, sp, #0
@@ -814,29 +625,16 @@ static uint8_t Is_Draw(void)
  8000548:	60b9      	str	r1, [r7, #8]
  800054a:	607a      	str	r2, [r7, #4]
  800054c:	603b      	str	r3, [r7, #0]
-    const char *p;
-
-    int sign = 1;
  800054e:	2301      	movs	r3, #1
  8000550:	61bb      	str	r3, [r7, #24]
-
-    int value = 0;
  8000552:	2300      	movs	r3, #0
  8000554:	617b      	str	r3, [r7, #20]
-
-
-    *has_player = 0;
  8000556:	683b      	ldr	r3, [r7, #0]
  8000558:	2200      	movs	r2, #0
  800055a:	701a      	strb	r2, [r3, #0]
-
-    *player = '\0';
  800055c:	687b      	ldr	r3, [r7, #4]
  800055e:	2200      	movs	r2, #0
  8000560:	701a      	strb	r2, [r3, #0]
-
-
-    if (strncmp(command, "MOVE:", 5) != 0)
  8000562:	4934      	ldr	r1, [pc, #208]	@ (8000634 <Parse_Move+0xf4>)
  8000564:	68fb      	ldr	r3, [r7, #12]
  8000566:	2205      	movs	r2, #5
@@ -844,38 +642,21 @@ static uint8_t Is_Draw(void)
  800056a:	f002 f99d 	bl	80028a8 <strncmp>
  800056e:	1e03      	subs	r3, r0, #0
  8000570:	d001      	beq.n	8000576 <Parse_Move+0x36>
-    {
-        return 0;
  8000572:	2300      	movs	r3, #0
  8000574:	e05a      	b.n	800062c <Parse_Move+0xec>
-    }
-
-
-    p = command + 5;
  8000576:	68fb      	ldr	r3, [r7, #12]
  8000578:	3305      	adds	r3, #5
  800057a:	61fb      	str	r3, [r7, #28]
-
-
-    if (*p == '-')
  800057c:	69fb      	ldr	r3, [r7, #28]
  800057e:	781b      	ldrb	r3, [r3, #0]
  8000580:	2b2d      	cmp	r3, #45	@ 0x2d
  8000582:	d105      	bne.n	8000590 <Parse_Move+0x50>
-    {
-        sign = -1;
  8000584:	2301      	movs	r3, #1
  8000586:	425b      	negs	r3, r3
  8000588:	61bb      	str	r3, [r7, #24]
-
-        p++;
  800058a:	69fb      	ldr	r3, [r7, #28]
  800058c:	3301      	adds	r3, #1
  800058e:	61fb      	str	r3, [r7, #28]
-    }
-
-
-    if (*p < '0' || *p > '9')
  8000590:	69fb      	ldr	r3, [r7, #28]
  8000592:	781b      	ldrb	r3, [r3, #0]
  8000594:	2b2f      	cmp	r3, #47	@ 0x2f
@@ -884,44 +665,27 @@ static uint8_t Is_Draw(void)
  800059a:	781b      	ldrb	r3, [r3, #0]
  800059c:	2b39      	cmp	r3, #57	@ 0x39
  800059e:	d914      	bls.n	80005ca <Parse_Move+0x8a>
-    {
-        return 0;
  80005a0:	2300      	movs	r3, #0
  80005a2:	e043      	b.n	800062c <Parse_Move+0xec>
-    }
-
-
-    while (*p >= '0' && *p <= '9')
-    {
-        if (value < 1000)
  80005a4:	697a      	ldr	r2, [r7, #20]
  80005a6:	23fa      	movs	r3, #250	@ 0xfa
  80005a8:	009b      	lsls	r3, r3, #2
  80005aa:	429a      	cmp	r2, r3
  80005ac:	da0a      	bge.n	80005c4 <Parse_Move+0x84>
-        {
-            value =
-                (value * 10) +
  80005ae:	697a      	ldr	r2, [r7, #20]
  80005b0:	0013      	movs	r3, r2
  80005b2:	009b      	lsls	r3, r3, #2
  80005b4:	189b      	adds	r3, r3, r2
  80005b6:	005b      	lsls	r3, r3, #1
  80005b8:	001a      	movs	r2, r3
-                (*p - '0');
  80005ba:	69fb      	ldr	r3, [r7, #28]
  80005bc:	781b      	ldrb	r3, [r3, #0]
  80005be:	3b30      	subs	r3, #48	@ 0x30
-            value =
  80005c0:	18d3      	adds	r3, r2, r3
  80005c2:	617b      	str	r3, [r7, #20]
-        }
-
-        p++;
  80005c4:	69fb      	ldr	r3, [r7, #28]
  80005c6:	3301      	adds	r3, #1
  80005c8:	61fb      	str	r3, [r7, #28]
-    while (*p >= '0' && *p <= '9')
  80005ca:	69fb      	ldr	r3, [r7, #28]
  80005cc:	781b      	ldrb	r3, [r3, #0]
  80005ce:	2b2f      	cmp	r3, #47	@ 0x2f
@@ -930,81 +694,47 @@ static uint8_t Is_Draw(void)
  80005d4:	781b      	ldrb	r3, [r3, #0]
  80005d6:	2b39      	cmp	r3, #57	@ 0x39
  80005d8:	d9e4      	bls.n	80005a4 <Parse_Move+0x64>
-    }
-
-
-    *index = value * sign;
  80005da:	697b      	ldr	r3, [r7, #20]
  80005dc:	69ba      	ldr	r2, [r7, #24]
  80005de:	435a      	muls	r2, r3
  80005e0:	68bb      	ldr	r3, [r7, #8]
  80005e2:	601a      	str	r2, [r3, #0]
-    /*
-     * Official protocol:
-     *
-     * MOVE:<index>
-     */
-    if (*p == '\0')
  80005e4:	69fb      	ldr	r3, [r7, #28]
  80005e6:	781b      	ldrb	r3, [r3, #0]
  80005e8:	2b00      	cmp	r3, #0
  80005ea:	d101      	bne.n	80005f0 <Parse_Move+0xb0>
-    {
-        return 1;
  80005ec:	2301      	movs	r3, #1
  80005ee:	e01d      	b.n	800062c <Parse_Move+0xec>
-     * Also accepts:
-     *
-     * MOVE:<index>:X
-     * MOVE:<index>:O
-     */
-    if (*p == ':' &&
  80005f0:	69fb      	ldr	r3, [r7, #28]
  80005f2:	781b      	ldrb	r3, [r3, #0]
  80005f4:	2b3a      	cmp	r3, #58	@ 0x3a
  80005f6:	d118      	bne.n	800062a <Parse_Move+0xea>
-        (p[1] == 'X' || p[1] == 'O') &&
  80005f8:	69fb      	ldr	r3, [r7, #28]
  80005fa:	3301      	adds	r3, #1
  80005fc:	781b      	ldrb	r3, [r3, #0]
-    if (*p == ':' &&
  80005fe:	2b58      	cmp	r3, #88	@ 0x58
  8000600:	d004      	beq.n	800060c <Parse_Move+0xcc>
-        (p[1] == 'X' || p[1] == 'O') &&
  8000602:	69fb      	ldr	r3, [r7, #28]
  8000604:	3301      	adds	r3, #1
  8000606:	781b      	ldrb	r3, [r3, #0]
  8000608:	2b4f      	cmp	r3, #79	@ 0x4f
  800060a:	d10e      	bne.n	800062a <Parse_Move+0xea>
-        p[2] == '\0')
  800060c:	69fb      	ldr	r3, [r7, #28]
  800060e:	3302      	adds	r3, #2
  8000610:	781b      	ldrb	r3, [r3, #0]
-        (p[1] == 'X' || p[1] == 'O') &&
  8000612:	2b00      	cmp	r3, #0
  8000614:	d109      	bne.n	800062a <Parse_Move+0xea>
-    {
-        *has_player = 1;
  8000616:	683b      	ldr	r3, [r7, #0]
  8000618:	2201      	movs	r2, #1
  800061a:	701a      	strb	r2, [r3, #0]
-
-        *player = p[1];
  800061c:	69fb      	ldr	r3, [r7, #28]
  800061e:	3301      	adds	r3, #1
  8000620:	781a      	ldrb	r2, [r3, #0]
  8000622:	687b      	ldr	r3, [r7, #4]
  8000624:	701a      	strb	r2, [r3, #0]
-
-        return 1;
  8000626:	2301      	movs	r3, #1
  8000628:	e000      	b.n	800062c <Parse_Move+0xec>
-    }
-
-
-    return 0;
  800062a:	2300      	movs	r3, #0
-}
  800062c:	0018      	movs	r0, r3
  800062e:	46bd      	mov	sp, r7
  8000630:	b008      	add	sp, #32
@@ -1012,18 +742,10 @@ static uint8_t Is_Draw(void)
  8000634:	08002940 	.word	0x08002940
 
 08000638 <Process_Command>:
-
-
-static void Process_Command(const char *command)
-{
  8000638:	b580      	push	{r7, lr}
  800063a:	b086      	sub	sp, #24
  800063c:	af00      	add	r7, sp, #0
  800063e:	6078      	str	r0, [r7, #4]
-    /*
-     * CONNECT
-     */
-    if (strcmp(command, "CONNECT") == 0)
  8000640:	4aa0      	ldr	r2, [pc, #640]	@ (80008c4 <Process_Command+0x28c>)
  8000642:	687b      	ldr	r3, [r7, #4]
  8000644:	0011      	movs	r1, r2
@@ -1031,72 +753,32 @@ static void Process_Command(const char *command)
  8000648:	f7ff fd5e 	bl	8000108 <strcmp>
  800064c:	1e03      	subs	r3, r0, #0
  800064e:	d113      	bne.n	8000678 <Process_Command+0x40>
-    {
-        if (server_state != SERVER_IDLE)
  8000650:	4b9d      	ldr	r3, [pc, #628]	@ (80008c8 <Process_Command+0x290>)
  8000652:	781b      	ldrb	r3, [r3, #0]
  8000654:	2b00      	cmp	r3, #0
  8000656:	d004      	beq.n	8000662 <Process_Command+0x2a>
-        {
-            Send_Response(
  8000658:	4b9c      	ldr	r3, [pc, #624]	@ (80008cc <Process_Command+0x294>)
  800065a:	0018      	movs	r0, r3
  800065c:	f7ff fdf2 	bl	8000244 <Send_Response>
-                "NACK:BADSTATE\r\n"
-            );
-
-            return;
  8000660:	e12d      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        connected = 1;
  8000662:	4b9b      	ldr	r3, [pc, #620]	@ (80008d0 <Process_Command+0x298>)
  8000664:	2201      	movs	r2, #1
  8000666:	701a      	strb	r2, [r3, #0]
-
-        local_reset_pending = 0;
  8000668:	4b9a      	ldr	r3, [pc, #616]	@ (80008d4 <Process_Command+0x29c>)
  800066a:	2200      	movs	r2, #0
  800066c:	701a      	strb	r2, [r3, #0]
-
-
-        Send_Response(
  800066e:	4b9a      	ldr	r3, [pc, #616]	@ (80008d8 <Process_Command+0x2a0>)
  8000670:	0018      	movs	r0, r3
  8000672:	f7ff fde7 	bl	8000244 <Send_Response>
-            "OK\r\n"
-        );
-
-
-        return;
  8000676:	e122      	b.n	80008be <Process_Command+0x286>
-
-    /*
-     * All remaining commands require
-     * an established connection.
-     */
-    if (!connected)
  8000678:	4b95      	ldr	r3, [pc, #596]	@ (80008d0 <Process_Command+0x298>)
  800067a:	781b      	ldrb	r3, [r3, #0]
  800067c:	2b00      	cmp	r3, #0
  800067e:	d104      	bne.n	800068a <Process_Command+0x52>
-    {
-        Send_Response(
  8000680:	4b96      	ldr	r3, [pc, #600]	@ (80008dc <Process_Command+0x2a4>)
  8000682:	0018      	movs	r0, r3
  8000684:	f7ff fdde 	bl	8000244 <Send_Response>
-            "NACK:BADCMD\r\n"
-        );
-
-        return;
  8000688:	e119      	b.n	80008be <Process_Command+0x286>
-     * POLL
-     *
-     * The GUI checks this command
-     * for hardware button events.
-     */
-    if (strcmp(command, "POLL") == 0)
  800068a:	4a95      	ldr	r2, [pc, #596]	@ (80008e0 <Process_Command+0x2a8>)
  800068c:	687b      	ldr	r3, [r7, #4]
  800068e:	0011      	movs	r1, r2
@@ -1104,41 +786,21 @@ static void Process_Command(const char *command)
  8000692:	f7ff fd39 	bl	8000108 <strcmp>
  8000696:	1e03      	subs	r3, r0, #0
  8000698:	d110      	bne.n	80006bc <Process_Command+0x84>
-    {
-        if (local_reset_pending)
  800069a:	4b8e      	ldr	r3, [pc, #568]	@ (80008d4 <Process_Command+0x29c>)
  800069c:	781b      	ldrb	r3, [r3, #0]
  800069e:	2b00      	cmp	r3, #0
  80006a0:	d007      	beq.n	80006b2 <Process_Command+0x7a>
-        {
-            local_reset_pending = 0;
  80006a2:	4b8c      	ldr	r3, [pc, #560]	@ (80008d4 <Process_Command+0x29c>)
  80006a4:	2200      	movs	r2, #0
  80006a6:	701a      	strb	r2, [r3, #0]
-
-            Send_Board_Response(
  80006a8:	4b8e      	ldr	r3, [pc, #568]	@ (80008e4 <Process_Command+0x2ac>)
  80006aa:	0018      	movs	r0, r3
  80006ac:	f7ff fde0 	bl	8000270 <Send_Board_Response>
-                "EVENT:NONE\r\n"
-            );
-        }
-
-
-        return;
  80006b0:	e105      	b.n	80008be <Process_Command+0x286>
-            Send_Response(
  80006b2:	4b8d      	ldr	r3, [pc, #564]	@ (80008e8 <Process_Command+0x2b0>)
  80006b4:	0018      	movs	r0, r3
  80006b6:	f7ff fdc5 	bl	8000244 <Send_Response>
-        return;
  80006ba:	e100      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * NEW
-     */
-    if (strcmp(command, "NEW") == 0)
  80006bc:	4a8b      	ldr	r2, [pc, #556]	@ (80008ec <Process_Command+0x2b4>)
  80006be:	687b      	ldr	r3, [r7, #4]
  80006c0:	0011      	movs	r1, r2
@@ -1146,58 +808,25 @@ static void Process_Command(const char *command)
  80006c4:	f7ff fd20 	bl	8000108 <strcmp>
  80006c8:	1e03      	subs	r3, r0, #0
  80006ca:	d115      	bne.n	80006f8 <Process_Command+0xc0>
-    {
-        if (server_state ==
  80006cc:	4b7e      	ldr	r3, [pc, #504]	@ (80008c8 <Process_Command+0x290>)
  80006ce:	781b      	ldrb	r3, [r3, #0]
  80006d0:	2b01      	cmp	r3, #1
  80006d2:	d104      	bne.n	80006de <Process_Command+0xa6>
-            SERVER_IN_PROGRESS)
-        {
-            Send_Response(
  80006d4:	4b7d      	ldr	r3, [pc, #500]	@ (80008cc <Process_Command+0x294>)
  80006d6:	0018      	movs	r0, r3
  80006d8:	f7ff fdb4 	bl	8000244 <Send_Response>
-                "NACK:BADSTATE\r\n"
-            );
-
-            return;
  80006dc:	e0ef      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        Reset_Board();
  80006de:	f7ff fe03 	bl	80002e8 <Reset_Board>
-
-        local_reset_pending = 0;
  80006e2:	4b7c      	ldr	r3, [pc, #496]	@ (80008d4 <Process_Command+0x29c>)
  80006e4:	2200      	movs	r2, #0
  80006e6:	701a      	strb	r2, [r3, #0]
-
-
-        server_state =
  80006e8:	4b77      	ldr	r3, [pc, #476]	@ (80008c8 <Process_Command+0x290>)
  80006ea:	2201      	movs	r2, #1
  80006ec:	701a      	strb	r2, [r3, #0]
-            SERVER_IN_PROGRESS;
-
-
-        Send_Board_Response(
  80006ee:	4b80      	ldr	r3, [pc, #512]	@ (80008f0 <Process_Command+0x2b8>)
  80006f0:	0018      	movs	r0, r3
  80006f2:	f7ff fdbd 	bl	8000270 <Send_Board_Response>
-            "OK:BOARD:"
-        );
-
-
-        return;
  80006f6:	e0e2      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * STATE
-     */
-    if (strcmp(command, "STATE") == 0)
  80006f8:	4a7e      	ldr	r2, [pc, #504]	@ (80008f4 <Process_Command+0x2bc>)
  80006fa:	687b      	ldr	r3, [r7, #4]
  80006fc:	0011      	movs	r1, r2
@@ -1205,42 +834,18 @@ static void Process_Command(const char *command)
  8000700:	f7ff fd02 	bl	8000108 <strcmp>
  8000704:	1e03      	subs	r3, r0, #0
  8000706:	d10d      	bne.n	8000724 <Process_Command+0xec>
-    {
-        if (server_state ==
  8000708:	4b6f      	ldr	r3, [pc, #444]	@ (80008c8 <Process_Command+0x290>)
  800070a:	781b      	ldrb	r3, [r3, #0]
  800070c:	2b00      	cmp	r3, #0
  800070e:	d104      	bne.n	800071a <Process_Command+0xe2>
-            SERVER_IDLE)
-        {
-            Send_Response(
  8000710:	4b79      	ldr	r3, [pc, #484]	@ (80008f8 <Process_Command+0x2c0>)
  8000712:	0018      	movs	r0, r3
  8000714:	f7ff fd96 	bl	8000244 <Send_Response>
-                "NACK:NOGAME\r\n"
-            );
-
-            return;
  8000718:	e0d1      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        Send_Board_Response(
  800071a:	4b78      	ldr	r3, [pc, #480]	@ (80008fc <Process_Command+0x2c4>)
  800071c:	0018      	movs	r0, r3
  800071e:	f7ff fda7 	bl	8000270 <Send_Board_Response>
-            "BOARD:"
-        );
-
-
-        return;
  8000722:	e0cc      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * RESIGN
-     */
-    if (strcmp(command, "RESIGN") == 0)
  8000724:	4a76      	ldr	r2, [pc, #472]	@ (8000900 <Process_Command+0x2c8>)
  8000726:	687b      	ldr	r3, [r7, #4]
  8000728:	0011      	movs	r1, r2
@@ -1248,49 +853,21 @@ static void Process_Command(const char *command)
  800072c:	f7ff fcec 	bl	8000108 <strcmp>
  8000730:	1e03      	subs	r3, r0, #0
  8000732:	d110      	bne.n	8000756 <Process_Command+0x11e>
-    {
-        if (server_state !=
  8000734:	4b64      	ldr	r3, [pc, #400]	@ (80008c8 <Process_Command+0x290>)
  8000736:	781b      	ldrb	r3, [r3, #0]
  8000738:	2b01      	cmp	r3, #1
  800073a:	d004      	beq.n	8000746 <Process_Command+0x10e>
-            SERVER_IN_PROGRESS)
-        {
-            Send_Response(
  800073c:	4b6e      	ldr	r3, [pc, #440]	@ (80008f8 <Process_Command+0x2c0>)
  800073e:	0018      	movs	r0, r3
  8000740:	f7ff fd80 	bl	8000244 <Send_Response>
-                "NACK:NOGAME\r\n"
-            );
-
-            return;
  8000744:	e0bb      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        server_state =
  8000746:	4b60      	ldr	r3, [pc, #384]	@ (80008c8 <Process_Command+0x290>)
  8000748:	2202      	movs	r2, #2
  800074a:	701a      	strb	r2, [r3, #0]
-            SERVER_GAME_OVER;
-
-
-        Send_Response(
  800074c:	4b6d      	ldr	r3, [pc, #436]	@ (8000904 <Process_Command+0x2cc>)
  800074e:	0018      	movs	r0, r3
  8000750:	f7ff fd78 	bl	8000244 <Send_Response>
-            "OK:GAMEOVER\r\n"
-        );
-
-
-        return;
  8000754:	e0b3      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * DISCONNECT
-     */
-    if (strcmp(command, "DISCONNECT") == 0)
  8000756:	4a6c      	ldr	r2, [pc, #432]	@ (8000908 <Process_Command+0x2d0>)
  8000758:	687b      	ldr	r3, [r7, #4]
  800075a:	0011      	movs	r1, r2
@@ -1298,64 +875,28 @@ static void Process_Command(const char *command)
  800075e:	f7ff fcd3 	bl	8000108 <strcmp>
  8000762:	1e03      	subs	r3, r0, #0
  8000764:	d118      	bne.n	8000798 <Process_Command+0x160>
-    {
-        if (server_state ==
  8000766:	4b58      	ldr	r3, [pc, #352]	@ (80008c8 <Process_Command+0x290>)
  8000768:	781b      	ldrb	r3, [r3, #0]
  800076a:	2b01      	cmp	r3, #1
  800076c:	d104      	bne.n	8000778 <Process_Command+0x140>
-            SERVER_IN_PROGRESS)
-        {
-            Send_Response(
  800076e:	4b57      	ldr	r3, [pc, #348]	@ (80008cc <Process_Command+0x294>)
  8000770:	0018      	movs	r0, r3
  8000772:	f7ff fd67 	bl	8000244 <Send_Response>
-                "NACK:BADSTATE\r\n"
-            );
-
-            return;
  8000776:	e0a2      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        connected = 0;
  8000778:	4b55      	ldr	r3, [pc, #340]	@ (80008d0 <Process_Command+0x298>)
  800077a:	2200      	movs	r2, #0
  800077c:	701a      	strb	r2, [r3, #0]
-
-        local_reset_pending = 0;
  800077e:	4b55      	ldr	r3, [pc, #340]	@ (80008d4 <Process_Command+0x29c>)
  8000780:	2200      	movs	r2, #0
  8000782:	701a      	strb	r2, [r3, #0]
-
-
-        server_state =
  8000784:	4b50      	ldr	r3, [pc, #320]	@ (80008c8 <Process_Command+0x290>)
  8000786:	2200      	movs	r2, #0
  8000788:	701a      	strb	r2, [r3, #0]
-            SERVER_IDLE;
-
-
-        Reset_Board();
  800078a:	f7ff fdad 	bl	80002e8 <Reset_Board>
-
-
-        Send_Response(
  800078e:	4b52      	ldr	r3, [pc, #328]	@ (80008d8 <Process_Command+0x2a0>)
  8000790:	0018      	movs	r0, r3
  8000792:	f7ff fd57 	bl	8000244 <Send_Response>
-            "OK\r\n"
-        );
-
-
-        return;
  8000796:	e092      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * MOVE
-     */
-    if (strncmp(command, "MOVE:", 5) == 0)
  8000798:	495c      	ldr	r1, [pc, #368]	@ (800090c <Process_Command+0x2d4>)
  800079a:	687b      	ldr	r3, [r7, #4]
  800079c:	2205      	movs	r2, #5
@@ -1364,31 +905,14 @@ static void Process_Command(const char *command)
  80007a4:	1e03      	subs	r3, r0, #0
  80007a6:	d000      	beq.n	80007aa <Process_Command+0x172>
  80007a8:	e085      	b.n	80008b6 <Process_Command+0x27e>
-        char requested_player;
-
-        uint8_t has_player;
-
-
-        if (server_state !=
  80007aa:	4b47      	ldr	r3, [pc, #284]	@ (80008c8 <Process_Command+0x290>)
  80007ac:	781b      	ldrb	r3, [r3, #0]
  80007ae:	2b01      	cmp	r3, #1
  80007b0:	d004      	beq.n	80007bc <Process_Command+0x184>
-            SERVER_IN_PROGRESS)
-        {
-            Send_Response(
  80007b2:	4b51      	ldr	r3, [pc, #324]	@ (80008f8 <Process_Command+0x2c0>)
  80007b4:	0018      	movs	r0, r3
  80007b6:	f7ff fd45 	bl	8000244 <Send_Response>
-                "NACK:NOGAME\r\n"
-            );
-
-            return;
  80007ba:	e080      	b.n	80008be <Process_Command+0x286>
-        }
-
-
-        if (!Parse_Move(
  80007bc:	2312      	movs	r3, #18
  80007be:	18fb      	adds	r3, r7, r3
  80007c0:	2213      	movs	r2, #19
@@ -1399,250 +923,114 @@ static void Process_Command(const char *command)
  80007ca:	f7ff feb9 	bl	8000540 <Parse_Move>
  80007ce:	1e03      	subs	r3, r0, #0
  80007d0:	d104      	bne.n	80007dc <Process_Command+0x1a4>
-                command,
-                &index,
-                &requested_player,
-                &has_player))
-        {
-            Send_Response(
  80007d2:	4b42      	ldr	r3, [pc, #264]	@ (80008dc <Process_Command+0x2a4>)
  80007d4:	0018      	movs	r0, r3
  80007d6:	f7ff fd35 	bl	8000244 <Send_Response>
-                "NACK:BADCMD\r\n"
-            );
-
-            return;
  80007da:	e070      	b.n	80008be <Process_Command+0x286>
-
-
-        /*
-         * Range validation.
-         */
-        if (index < 0 ||
  80007dc:	697b      	ldr	r3, [r7, #20]
  80007de:	2b00      	cmp	r3, #0
  80007e0:	db02      	blt.n	80007e8 <Process_Command+0x1b0>
-            index > 8)
  80007e2:	697b      	ldr	r3, [r7, #20]
-        if (index < 0 ||
  80007e4:	2b08      	cmp	r3, #8
  80007e6:	dd04      	ble.n	80007f2 <Process_Command+0x1ba>
-        {
-            Send_Response(
  80007e8:	4b49      	ldr	r3, [pc, #292]	@ (8000910 <Process_Command+0x2d8>)
  80007ea:	0018      	movs	r0, r3
  80007ec:	f7ff fd2a 	bl	8000244 <Send_Response>
-                "NACK:RANGE\r\n"
-            );
-
-            return;
  80007f0:	e065      	b.n	80008be <Process_Command+0x286>
-
-
-        /*
-         * Occupied-cell validation.
-         */
-        if (board[index] != '.')
  80007f2:	697b      	ldr	r3, [r7, #20]
  80007f4:	4a47      	ldr	r2, [pc, #284]	@ (8000914 <Process_Command+0x2dc>)
  80007f6:	5cd3      	ldrb	r3, [r2, r3]
  80007f8:	2b2e      	cmp	r3, #46	@ 0x2e
  80007fa:	d004      	beq.n	8000806 <Process_Command+0x1ce>
-        {
-            Send_Response(
  80007fc:	4b46      	ldr	r3, [pc, #280]	@ (8000918 <Process_Command+0x2e0>)
  80007fe:	0018      	movs	r0, r3
  8000800:	f7ff fd20 	bl	8000244 <Send_Response>
-                "NACK:OCCUPIED\r\n"
-            );
-
-            return;
  8000804:	e05b      	b.n	80008be <Process_Command+0x286>
-        /*
-         * If the client includes a player,
-         * verify it against the current
-         * authoritative STM32 turn.
-         */
-        if (has_player &&
  8000806:	2312      	movs	r3, #18
  8000808:	18fb      	adds	r3, r7, r3
  800080a:	781b      	ldrb	r3, [r3, #0]
  800080c:	2b00      	cmp	r3, #0
  800080e:	d00b      	beq.n	8000828 <Process_Command+0x1f0>
-            requested_player !=
  8000810:	2313      	movs	r3, #19
  8000812:	18fb      	adds	r3, r7, r3
  8000814:	781a      	ldrb	r2, [r3, #0]
  8000816:	4b41      	ldr	r3, [pc, #260]	@ (800091c <Process_Command+0x2e4>)
  8000818:	781b      	ldrb	r3, [r3, #0]
-        if (has_player &&
  800081a:	429a      	cmp	r2, r3
  800081c:	d004      	beq.n	8000828 <Process_Command+0x1f0>
-            current_turn)
-        {
-            Send_Response(
  800081e:	4b40      	ldr	r3, [pc, #256]	@ (8000920 <Process_Command+0x2e8>)
  8000820:	0018      	movs	r0, r3
  8000822:	f7ff fd0f 	bl	8000244 <Send_Response>
-                "NACK:NOTURN\r\n"
-            );
-
-            return;
  8000826:	e04a      	b.n	80008be <Process_Command+0x286>
-
-
-        /*
-         * STM32 chooses the actual mark.
-         */
-        board[index] =
  8000828:	697b      	ldr	r3, [r7, #20]
  800082a:	4a3c      	ldr	r2, [pc, #240]	@ (800091c <Process_Command+0x2e4>)
  800082c:	7811      	ldrb	r1, [r2, #0]
  800082e:	4a39      	ldr	r2, [pc, #228]	@ (8000914 <Process_Command+0x2dc>)
  8000830:	54d1      	strb	r1, [r2, r3]
-
-
-        /*
-         * Win detection.
-         */
-        if (Has_Won(current_turn))
  8000832:	4b3a      	ldr	r3, [pc, #232]	@ (800091c <Process_Command+0x2e4>)
  8000834:	781b      	ldrb	r3, [r3, #0]
  8000836:	0018      	movs	r0, r3
  8000838:	f7ff fe06 	bl	8000448 <Has_Won>
  800083c:	1e03      	subs	r3, r0, #0
  800083e:	d01e      	beq.n	800087e <Process_Command+0x246>
-        {
-            char prefix[7];
-
-
-            prefix[0] = 'W';
  8000840:	2108      	movs	r1, #8
  8000842:	187b      	adds	r3, r7, r1
  8000844:	2257      	movs	r2, #87	@ 0x57
  8000846:	701a      	strb	r2, [r3, #0]
-
-            prefix[1] = 'I';
  8000848:	187b      	adds	r3, r7, r1
  800084a:	2249      	movs	r2, #73	@ 0x49
  800084c:	705a      	strb	r2, [r3, #1]
-
-            prefix[2] = 'N';
  800084e:	187b      	adds	r3, r7, r1
  8000850:	224e      	movs	r2, #78	@ 0x4e
  8000852:	709a      	strb	r2, [r3, #2]
-
-            prefix[3] = ':';
  8000854:	187b      	adds	r3, r7, r1
  8000856:	223a      	movs	r2, #58	@ 0x3a
  8000858:	70da      	strb	r2, [r3, #3]
-
-            prefix[4] =
  800085a:	4b30      	ldr	r3, [pc, #192]	@ (800091c <Process_Command+0x2e4>)
  800085c:	781a      	ldrb	r2, [r3, #0]
  800085e:	187b      	adds	r3, r7, r1
  8000860:	711a      	strb	r2, [r3, #4]
-                current_turn;
-
-            prefix[5] = ':';
  8000862:	187b      	adds	r3, r7, r1
  8000864:	223a      	movs	r2, #58	@ 0x3a
  8000866:	715a      	strb	r2, [r3, #5]
-
-            prefix[6] = '\0';
  8000868:	187b      	adds	r3, r7, r1
  800086a:	2200      	movs	r2, #0
  800086c:	719a      	strb	r2, [r3, #6]
-
-
-            server_state =
  800086e:	4b16      	ldr	r3, [pc, #88]	@ (80008c8 <Process_Command+0x290>)
  8000870:	2202      	movs	r2, #2
  8000872:	701a      	strb	r2, [r3, #0]
-                SERVER_GAME_OVER;
-
-
-            Send_Board_Response(
  8000874:	187b      	adds	r3, r7, r1
  8000876:	0018      	movs	r0, r3
  8000878:	f7ff fcfa 	bl	8000270 <Send_Board_Response>
  800087c:	e01f      	b.n	80008be <Process_Command+0x286>
-
-
-        /*
-         * Draw detection.
-         */
-        if (Is_Draw())
  800087e:	f7ff fe3f 	bl	8000500 <Is_Draw>
  8000882:	1e03      	subs	r3, r0, #0
  8000884:	d007      	beq.n	8000896 <Process_Command+0x25e>
-        {
-            server_state =
  8000886:	4b10      	ldr	r3, [pc, #64]	@ (80008c8 <Process_Command+0x290>)
  8000888:	2202      	movs	r2, #2
  800088a:	701a      	strb	r2, [r3, #0]
-                SERVER_GAME_OVER;
-
-
-            Send_Board_Response(
  800088c:	4b25      	ldr	r3, [pc, #148]	@ (8000924 <Process_Command+0x2ec>)
  800088e:	0018      	movs	r0, r3
  8000890:	f7ff fcee 	bl	8000270 <Send_Board_Response>
-                "DRAW:"
-            );
-
-
-            return;
  8000894:	e013      	b.n	80008be <Process_Command+0x286>
-
-
-        /*
-         * Change player.
-         */
-        if (current_turn == 'X')
  8000896:	4b21      	ldr	r3, [pc, #132]	@ (800091c <Process_Command+0x2e4>)
  8000898:	781b      	ldrb	r3, [r3, #0]
  800089a:	2b58      	cmp	r3, #88	@ 0x58
  800089c:	d103      	bne.n	80008a6 <Process_Command+0x26e>
-        {
-            current_turn = 'O';
  800089e:	4b1f      	ldr	r3, [pc, #124]	@ (800091c <Process_Command+0x2e4>)
  80008a0:	224f      	movs	r2, #79	@ 0x4f
  80008a2:	701a      	strb	r2, [r3, #0]
  80008a4:	e002      	b.n	80008ac <Process_Command+0x274>
-        }
-
-        else
-        {
-            current_turn = 'X';
  80008a6:	4b1d      	ldr	r3, [pc, #116]	@ (800091c <Process_Command+0x2e4>)
  80008a8:	2258      	movs	r2, #88	@ 0x58
  80008aa:	701a      	strb	r2, [r3, #0]
-        }
-
-
-        Send_Board_Response(
  80008ac:	4b10      	ldr	r3, [pc, #64]	@ (80008f0 <Process_Command+0x2b8>)
  80008ae:	0018      	movs	r0, r3
  80008b0:	f7ff fcde 	bl	8000270 <Send_Board_Response>
-            "OK:BOARD:"
-        );
-
-
-        return;
  80008b4:	e003      	b.n	80008be <Process_Command+0x286>
-
-
-    /*
-     * Any other command is invalid.
-     */
-    Send_Response(
  80008b6:	4b09      	ldr	r3, [pc, #36]	@ (80008dc <Process_Command+0x2a4>)
  80008b8:	0018      	movs	r0, r3
  80008ba:	f7ff fcc3 	bl	8000244 <Send_Response>
-        "NACK:BADCMD\r\n"
-    );
-}
  80008be:	46bd      	mov	sp, r7
  80008c0:	b006      	add	sp, #24
  80008c2:	bd80      	pop	{r7, pc}
@@ -1673,49 +1061,14 @@ static void Process_Command(const char *command)
  8000924:	08002a24 	.word	0x08002a24
 
 08000928 <main>:
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
  8000928:	b590      	push	{r4, r7, lr}
  800092a:	b083      	sub	sp, #12
  800092c:	af00      	add	r7, sp, #0
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
  800092e:	f000 fa61 	bl	8000df4 <HAL_Init>
-
-  /* USER CODE END Init */
-
-
-  /* Configure the system clock */
-  SystemClock_Config();
  8000932:	f000 f8bf 	bl	8000ab4 <SystemClock_Config>
-
-  /* USER CODE END SysInit */
-
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
  8000936:	f000 f945 	bl	8000bc4 <MX_GPIO_Init>
-
-  MX_USART1_UART_Init();
  800093a:	f000 f913 	bl	8000b64 <MX_USART1_UART_Init>
-
-
-  /* USER CODE BEGIN 2 */
-
-  Reset_Board();
  800093e:	f7ff fcd3 	bl	80002e8 <Reset_Board>
-
-
-  previous_button_state =
-      HAL_GPIO_ReadPin(
  8000942:	2390      	movs	r3, #144	@ 0x90
  8000944:	05db      	lsls	r3, r3, #23
  8000946:	2101      	movs	r1, #1
@@ -1723,20 +1076,9 @@ int main(void)
  800094a:	f000 fcdb 	bl	8001304 <HAL_GPIO_ReadPin>
  800094e:	0003      	movs	r3, r0
  8000950:	001a      	movs	r2, r3
-  previous_button_state =
  8000952:	4b4e      	ldr	r3, [pc, #312]	@ (8000a8c <main+0x164>)
  8000954:	701a      	strb	r2, [r3, #0]
-
-    /*
-     * Update the physical hardware
-     * on every loop.
-     */
-    Update_Hardware();
  8000956:	f7ff fd03 	bl	8000360 <Update_Hardware>
-
-
-    uart_status =
-        HAL_UART_Receive(
  800095a:	1dfc      	adds	r4, r7, #7
  800095c:	494c      	ldr	r1, [pc, #304]	@ (8000a90 <main+0x168>)
  800095e:	484d      	ldr	r0, [pc, #308]	@ (8000a94 <main+0x16c>)
@@ -1745,134 +1087,69 @@ int main(void)
  8000964:	f001 fb54 	bl	8002010 <HAL_UART_Receive>
  8000968:	0003      	movs	r3, r0
  800096a:	7023      	strb	r3, [r4, #0]
-
-
-    /*
-     * A byte was received.
-     */
-    if (uart_status == HAL_OK)
  800096c:	1dfb      	adds	r3, r7, #7
  800096e:	781b      	ldrb	r3, [r3, #0]
  8000970:	2b00      	cmp	r3, #0
  8000972:	d166      	bne.n	8000a42 <main+0x11a>
-    {
-        /*
-         * We previously received an
-         * oversized frame.
-         */
-        if (discard_frame)
  8000974:	4b48      	ldr	r3, [pc, #288]	@ (8000a98 <main+0x170>)
  8000976:	781b      	ldrb	r3, [r3, #0]
  8000978:	2b00      	cmp	r3, #0
  800097a:	d012      	beq.n	80009a2 <main+0x7a>
-        {
-            last_rx_tick =
-                HAL_GetTick();
  800097c:	f000 fa94 	bl	8000ea8 <HAL_GetTick>
  8000980:	0002      	movs	r2, r0
-            last_rx_tick =
  8000982:	4b46      	ldr	r3, [pc, #280]	@ (8000a9c <main+0x174>)
  8000984:	601a      	str	r2, [r3, #0]
-
-
-            if (rx_byte == '\n')
  8000986:	4b42      	ldr	r3, [pc, #264]	@ (8000a90 <main+0x168>)
  8000988:	781b      	ldrb	r3, [r3, #0]
  800098a:	2b0a      	cmp	r3, #10
  800098c:	d1e3      	bne.n	8000956 <main+0x2e>
-            {
-                discard_frame = 0;
  800098e:	4b42      	ldr	r3, [pc, #264]	@ (8000a98 <main+0x170>)
  8000990:	2200      	movs	r2, #0
  8000992:	701a      	strb	r2, [r3, #0]
-
-                frame_active = 0;
  8000994:	4b42      	ldr	r3, [pc, #264]	@ (8000aa0 <main+0x178>)
  8000996:	2200      	movs	r2, #0
  8000998:	701a      	strb	r2, [r3, #0]
-
-                rx_index = 0;
  800099a:	4b42      	ldr	r3, [pc, #264]	@ (8000aa4 <main+0x17c>)
  800099c:	2200      	movs	r2, #0
  800099e:	701a      	strb	r2, [r3, #0]
  80009a0:	e7d9      	b.n	8000956 <main+0x2e>
-
-
-        /*
-         * Newline completes a frame.
-         */
-        else if (rx_byte == '\n')
  80009a2:	4b3b      	ldr	r3, [pc, #236]	@ (8000a90 <main+0x168>)
  80009a4:	781b      	ldrb	r3, [r3, #0]
  80009a6:	2b0a      	cmp	r3, #10
  80009a8:	d110      	bne.n	80009cc <main+0xa4>
-        {
-            rx_buffer[rx_index] =
  80009aa:	4b3e      	ldr	r3, [pc, #248]	@ (8000aa4 <main+0x17c>)
  80009ac:	781b      	ldrb	r3, [r3, #0]
  80009ae:	001a      	movs	r2, r3
  80009b0:	4b3d      	ldr	r3, [pc, #244]	@ (8000aa8 <main+0x180>)
  80009b2:	2100      	movs	r1, #0
  80009b4:	5499      	strb	r1, [r3, r2]
-                '\0';
-
-
-            Process_Command(
  80009b6:	4b3c      	ldr	r3, [pc, #240]	@ (8000aa8 <main+0x180>)
  80009b8:	0018      	movs	r0, r3
  80009ba:	f7ff fe3d 	bl	8000638 <Process_Command>
-                rx_buffer
-            );
-
-
-            rx_index = 0;
  80009be:	4b39      	ldr	r3, [pc, #228]	@ (8000aa4 <main+0x17c>)
  80009c0:	2200      	movs	r2, #0
  80009c2:	701a      	strb	r2, [r3, #0]
-
-            frame_active = 0;
  80009c4:	4b36      	ldr	r3, [pc, #216]	@ (8000aa0 <main+0x178>)
  80009c6:	2200      	movs	r2, #0
  80009c8:	701a      	strb	r2, [r3, #0]
  80009ca:	e7c4      	b.n	8000956 <main+0x2e>
-
-
-        /*
-         * Accept CRLF.
-         */
-        else if (rx_byte == '\r')
  80009cc:	4b30      	ldr	r3, [pc, #192]	@ (8000a90 <main+0x168>)
  80009ce:	781b      	ldrb	r3, [r3, #0]
  80009d0:	2b0d      	cmp	r3, #13
  80009d2:	d109      	bne.n	80009e8 <main+0xc0>
-        {
-            if (frame_active)
  80009d4:	4b32      	ldr	r3, [pc, #200]	@ (8000aa0 <main+0x178>)
  80009d6:	781b      	ldrb	r3, [r3, #0]
  80009d8:	2b00      	cmp	r3, #0
  80009da:	d0bc      	beq.n	8000956 <main+0x2e>
-            {
-                last_rx_tick =
-                    HAL_GetTick();
  80009dc:	f000 fa64 	bl	8000ea8 <HAL_GetTick>
  80009e0:	0002      	movs	r2, r0
-                last_rx_tick =
  80009e2:	4b2e      	ldr	r3, [pc, #184]	@ (8000a9c <main+0x174>)
  80009e4:	601a      	str	r2, [r3, #0]
  80009e6:	e7b6      	b.n	8000956 <main+0x2e>
-        /*
-         * Normal command character.
-         */
-        else
-        {
-            if (rx_index <
  80009e8:	4b2e      	ldr	r3, [pc, #184]	@ (8000aa4 <main+0x17c>)
  80009ea:	781b      	ldrb	r3, [r3, #0]
  80009ec:	2b3e      	cmp	r3, #62	@ 0x3e
  80009ee:	d815      	bhi.n	8000a1c <main+0xf4>
-                RX_BUFFER_SIZE - 1)
-            {
-                rx_buffer[rx_index] =
  80009f0:	4b2c      	ldr	r3, [pc, #176]	@ (8000aa4 <main+0x17c>)
  80009f2:	781b      	ldrb	r3, [r3, #0]
  80009f4:	001a      	movs	r2, r3
@@ -1880,91 +1157,45 @@ int main(void)
  80009f8:	7819      	ldrb	r1, [r3, #0]
  80009fa:	4b2b      	ldr	r3, [pc, #172]	@ (8000aa8 <main+0x180>)
  80009fc:	5499      	strb	r1, [r3, r2]
-                    (char)rx_byte;
-
-
-                rx_index++;
  80009fe:	4b29      	ldr	r3, [pc, #164]	@ (8000aa4 <main+0x17c>)
  8000a00:	781b      	ldrb	r3, [r3, #0]
  8000a02:	3301      	adds	r3, #1
  8000a04:	b2da      	uxtb	r2, r3
  8000a06:	4b27      	ldr	r3, [pc, #156]	@ (8000aa4 <main+0x17c>)
  8000a08:	701a      	strb	r2, [r3, #0]
-
-
-                frame_active = 1;
  8000a0a:	4b25      	ldr	r3, [pc, #148]	@ (8000aa0 <main+0x178>)
  8000a0c:	2201      	movs	r2, #1
  8000a0e:	701a      	strb	r2, [r3, #0]
-
-
-                last_rx_tick =
-                    HAL_GetTick();
  8000a10:	f000 fa4a 	bl	8000ea8 <HAL_GetTick>
  8000a14:	0002      	movs	r2, r0
-                last_rx_tick =
  8000a16:	4b21      	ldr	r3, [pc, #132]	@ (8000a9c <main+0x174>)
  8000a18:	601a      	str	r2, [r3, #0]
  8000a1a:	e79c      	b.n	8000956 <main+0x2e>
-            /*
-             * Frame is too large.
-             */
-            else
-            {
-                Send_Response(
  8000a1c:	4b23      	ldr	r3, [pc, #140]	@ (8000aac <main+0x184>)
  8000a1e:	0018      	movs	r0, r3
  8000a20:	f7ff fc10 	bl	8000244 <Send_Response>
-                    "NACK:BADCMD\r\n"
-                );
-
-
-                rx_index = 0;
  8000a24:	4b1f      	ldr	r3, [pc, #124]	@ (8000aa4 <main+0x17c>)
  8000a26:	2200      	movs	r2, #0
  8000a28:	701a      	strb	r2, [r3, #0]
-
-                discard_frame = 1;
  8000a2a:	4b1b      	ldr	r3, [pc, #108]	@ (8000a98 <main+0x170>)
  8000a2c:	2201      	movs	r2, #1
  8000a2e:	701a      	strb	r2, [r3, #0]
-
-                frame_active = 1;
  8000a30:	4b1b      	ldr	r3, [pc, #108]	@ (8000aa0 <main+0x178>)
  8000a32:	2201      	movs	r2, #1
  8000a34:	701a      	strb	r2, [r3, #0]
-
-
-                last_rx_tick =
-                    HAL_GetTick();
  8000a36:	f000 fa37 	bl	8000ea8 <HAL_GetTick>
  8000a3a:	0002      	movs	r2, r0
-                last_rx_tick =
  8000a3c:	4b17      	ldr	r3, [pc, #92]	@ (8000a9c <main+0x174>)
  8000a3e:	601a      	str	r2, [r3, #0]
  8000a40:	e789      	b.n	8000956 <main+0x2e>
-
-
-    /*
-     * UART polling timeout.
-     */
-    else if (uart_status ==
  8000a42:	1dfb      	adds	r3, r7, #7
  8000a44:	781b      	ldrb	r3, [r3, #0]
  8000a46:	2b03      	cmp	r3, #3
  8000a48:	d185      	bne.n	8000956 <main+0x2e>
-             HAL_TIMEOUT)
-    {
-        /*
-         * Check unfinished frame timeout.
-         */
-        if (frame_active)
  8000a4a:	4b15      	ldr	r3, [pc, #84]	@ (8000aa0 <main+0x178>)
  8000a4c:	781b      	ldrb	r3, [r3, #0]
  8000a4e:	2b00      	cmp	r3, #0
  8000a50:	d081      	beq.n	8000956 <main+0x2e>
-        {
-            if ((HAL_GetTick() -
  8000a52:	f000 fa29 	bl	8000ea8 <HAL_GetTick>
  8000a56:	0002      	movs	r2, r0
  8000a58:	4b10      	ldr	r3, [pc, #64]	@ (8000a9c <main+0x174>)
@@ -1975,39 +1206,22 @@ int main(void)
  8000a62:	429a      	cmp	r2, r3
  8000a64:	d200      	bcs.n	8000a68 <main+0x140>
  8000a66:	e776      	b.n	8000956 <main+0x2e>
-                 last_rx_tick)
-                >= FRAME_TIMEOUT_MS)
-            {
-                if (!discard_frame)
  8000a68:	4b0b      	ldr	r3, [pc, #44]	@ (8000a98 <main+0x170>)
  8000a6a:	781b      	ldrb	r3, [r3, #0]
  8000a6c:	2b00      	cmp	r3, #0
  8000a6e:	d103      	bne.n	8000a78 <main+0x150>
-                {
-                    Send_Response(
  8000a70:	4b0f      	ldr	r3, [pc, #60]	@ (8000ab0 <main+0x188>)
  8000a72:	0018      	movs	r0, r3
  8000a74:	f7ff fbe6 	bl	8000244 <Send_Response>
-                        "NACK:TIMEOUT\r\n"
-                    );
-                }
-
-
-                rx_index = 0;
  8000a78:	4b0a      	ldr	r3, [pc, #40]	@ (8000aa4 <main+0x17c>)
  8000a7a:	2200      	movs	r2, #0
  8000a7c:	701a      	strb	r2, [r3, #0]
-
-                frame_active = 0;
  8000a7e:	4b08      	ldr	r3, [pc, #32]	@ (8000aa0 <main+0x178>)
  8000a80:	2200      	movs	r2, #0
  8000a82:	701a      	strb	r2, [r3, #0]
-
-                discard_frame = 0;
  8000a84:	4b04      	ldr	r3, [pc, #16]	@ (8000a98 <main+0x170>)
  8000a86:	2200      	movs	r2, #0
  8000a88:	701a      	strb	r2, [r3, #0]
-  {
  8000a8a:	e764      	b.n	8000956 <main+0x2e>
  8000a8c:	2000000a 	.word	0x2000000a
  8000a90:	200000bc 	.word	0x200000bc
@@ -2021,16 +1235,9 @@ int main(void)
  8000ab0:	08002a2c 	.word	0x08002a2c
 
 08000ab4 <SystemClock_Config>:
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
  8000ab4:	b590      	push	{r4, r7, lr}
  8000ab6:	b097      	sub	sp, #92	@ 0x5c
  8000ab8:	af00      	add	r7, sp, #0
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
  8000aba:	2428      	movs	r4, #40	@ 0x28
  8000abc:	193b      	adds	r3, r7, r4
  8000abe:	0018      	movs	r0, r3
@@ -2038,8 +1245,6 @@ void SystemClock_Config(void)
  8000ac2:	001a      	movs	r2, r3
  8000ac4:	2100      	movs	r1, #0
  8000ac6:	f001 fee7 	bl	8002898 <memset>
-
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
  8000aca:	2318      	movs	r3, #24
  8000acc:	18fb      	adds	r3, r7, r3
  8000ace:	0018      	movs	r0, r3
@@ -2047,126 +1252,63 @@ void SystemClock_Config(void)
  8000ad2:	001a      	movs	r2, r3
  8000ad4:	2100      	movs	r1, #0
  8000ad6:	f001 fedf 	bl	8002898 <memset>
-
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
  8000ada:	1d3b      	adds	r3, r7, #4
  8000adc:	0018      	movs	r0, r3
  8000ade:	2314      	movs	r3, #20
  8000ae0:	001a      	movs	r2, r3
  8000ae2:	2100      	movs	r1, #0
  8000ae4:	f001 fed8 	bl	8002898 <memset>
-
-
-  RCC_OscInitStruct.OscillatorType =
  8000ae8:	0021      	movs	r1, r4
  8000aea:	187b      	adds	r3, r7, r1
  8000aec:	2202      	movs	r2, #2
  8000aee:	601a      	str	r2, [r3, #0]
-      RCC_OSCILLATORTYPE_HSI;
-
-  RCC_OscInitStruct.HSIState =
  8000af0:	187b      	adds	r3, r7, r1
  8000af2:	2201      	movs	r2, #1
  8000af4:	60da      	str	r2, [r3, #12]
-      RCC_HSI_ON;
-
-  RCC_OscInitStruct.HSICalibrationValue =
  8000af6:	187b      	adds	r3, r7, r1
  8000af8:	2210      	movs	r2, #16
  8000afa:	611a      	str	r2, [r3, #16]
-      RCC_HSICALIBRATION_DEFAULT;
-
-  RCC_OscInitStruct.PLL.PLLState =
  8000afc:	187b      	adds	r3, r7, r1
  8000afe:	2200      	movs	r2, #0
  8000b00:	621a      	str	r2, [r3, #32]
-      RCC_PLL_NONE;
-
-
-  if (HAL_RCC_OscConfig(
  8000b02:	187b      	adds	r3, r7, r1
  8000b04:	0018      	movs	r0, r3
  8000b06:	f000 fc53 	bl	80013b0 <HAL_RCC_OscConfig>
  8000b0a:	1e03      	subs	r3, r0, #0
  8000b0c:	d001      	beq.n	8000b12 <SystemClock_Config+0x5e>
-          &RCC_OscInitStruct)
-      != HAL_OK)
-  {
-    Error_Handler();
  8000b0e:	f000 f8b1 	bl	8000c74 <Error_Handler>
-  }
-
-
-  RCC_ClkInitStruct.ClockType =
  8000b12:	2118      	movs	r1, #24
  8000b14:	187b      	adds	r3, r7, r1
  8000b16:	2207      	movs	r2, #7
  8000b18:	601a      	str	r2, [r3, #0]
-      RCC_CLOCKTYPE_HCLK |
-      RCC_CLOCKTYPE_SYSCLK |
-      RCC_CLOCKTYPE_PCLK1;
-
-  RCC_ClkInitStruct.SYSCLKSource =
  8000b1a:	187b      	adds	r3, r7, r1
  8000b1c:	2200      	movs	r2, #0
  8000b1e:	605a      	str	r2, [r3, #4]
-      RCC_SYSCLKSOURCE_HSI;
-
-  RCC_ClkInitStruct.AHBCLKDivider =
  8000b20:	187b      	adds	r3, r7, r1
  8000b22:	2200      	movs	r2, #0
  8000b24:	609a      	str	r2, [r3, #8]
-      RCC_SYSCLK_DIV1;
-
-  RCC_ClkInitStruct.APB1CLKDivider =
  8000b26:	187b      	adds	r3, r7, r1
  8000b28:	2200      	movs	r2, #0
  8000b2a:	60da      	str	r2, [r3, #12]
-      RCC_HCLK_DIV1;
-
-
-  if (HAL_RCC_ClockConfig(
  8000b2c:	187b      	adds	r3, r7, r1
  8000b2e:	2100      	movs	r1, #0
  8000b30:	0018      	movs	r0, r3
  8000b32:	f000 ff57 	bl	80019e4 <HAL_RCC_ClockConfig>
  8000b36:	1e03      	subs	r3, r0, #0
  8000b38:	d001      	beq.n	8000b3e <SystemClock_Config+0x8a>
-          &RCC_ClkInitStruct,
-          FLASH_LATENCY_0)
-      != HAL_OK)
-  {
-    Error_Handler();
  8000b3a:	f000 f89b 	bl	8000c74 <Error_Handler>
-  }
-
-
-  PeriphClkInit.PeriphClockSelection =
  8000b3e:	1d3b      	adds	r3, r7, #4
  8000b40:	2201      	movs	r2, #1
  8000b42:	601a      	str	r2, [r3, #0]
-      RCC_PERIPHCLK_USART1;
-
-  PeriphClkInit.Usart1ClockSelection =
  8000b44:	1d3b      	adds	r3, r7, #4
  8000b46:	2200      	movs	r2, #0
  8000b48:	609a      	str	r2, [r3, #8]
-      RCC_USART1CLKSOURCE_PCLK1;
-
-
-  if (HAL_RCCEx_PeriphCLKConfig(
  8000b4a:	1d3b      	adds	r3, r7, #4
  8000b4c:	0018      	movs	r0, r3
  8000b4e:	f001 f88d 	bl	8001c6c <HAL_RCCEx_PeriphCLKConfig>
  8000b52:	1e03      	subs	r3, r0, #0
  8000b54:	d001      	beq.n	8000b5a <SystemClock_Config+0xa6>
-          &PeriphClkInit)
-      != HAL_OK)
-  {
-    Error_Handler();
  8000b56:	f000 f88d 	bl	8000c74 <Error_Handler>
-  }
-}
  8000b5a:	46c0      	nop			@ (mov r8, r8)
  8000b5c:	46bd      	mov	sp, r7
  8000b5e:	b017      	add	sp, #92	@ 0x5c
@@ -2174,98 +1316,45 @@ void SystemClock_Config(void)
 	...
 
 08000b64 <MX_USART1_UART_Init>:
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
  8000b64:	b580      	push	{r7, lr}
  8000b66:	af00      	add	r7, sp, #0
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-
-
-  huart1.Instance =
  8000b68:	4b14      	ldr	r3, [pc, #80]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b6a:	4a15      	ldr	r2, [pc, #84]	@ (8000bc0 <MX_USART1_UART_Init+0x5c>)
  8000b6c:	601a      	str	r2, [r3, #0]
-      USART1;
-
-  huart1.Init.BaudRate =
  8000b6e:	4b13      	ldr	r3, [pc, #76]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b70:	22e1      	movs	r2, #225	@ 0xe1
  8000b72:	0252      	lsls	r2, r2, #9
  8000b74:	605a      	str	r2, [r3, #4]
-      115200;
-
-  huart1.Init.WordLength =
  8000b76:	4b11      	ldr	r3, [pc, #68]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b78:	2200      	movs	r2, #0
  8000b7a:	609a      	str	r2, [r3, #8]
-      UART_WORDLENGTH_8B;
-
-  huart1.Init.StopBits =
  8000b7c:	4b0f      	ldr	r3, [pc, #60]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b7e:	2200      	movs	r2, #0
  8000b80:	60da      	str	r2, [r3, #12]
-      UART_STOPBITS_1;
-
-  huart1.Init.Parity =
  8000b82:	4b0e      	ldr	r3, [pc, #56]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b84:	2200      	movs	r2, #0
  8000b86:	611a      	str	r2, [r3, #16]
-      UART_PARITY_NONE;
-
-  huart1.Init.Mode =
  8000b88:	4b0c      	ldr	r3, [pc, #48]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b8a:	220c      	movs	r2, #12
  8000b8c:	615a      	str	r2, [r3, #20]
-      UART_MODE_TX_RX;
-
-  huart1.Init.HwFlowCtl =
  8000b8e:	4b0b      	ldr	r3, [pc, #44]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b90:	2200      	movs	r2, #0
  8000b92:	619a      	str	r2, [r3, #24]
-      UART_HWCONTROL_NONE;
-
-  huart1.Init.OverSampling =
  8000b94:	4b09      	ldr	r3, [pc, #36]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b96:	2200      	movs	r2, #0
  8000b98:	61da      	str	r2, [r3, #28]
-      UART_OVERSAMPLING_16;
-
-  huart1.Init.OneBitSampling =
  8000b9a:	4b08      	ldr	r3, [pc, #32]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000b9c:	2200      	movs	r2, #0
  8000b9e:	621a      	str	r2, [r3, #32]
-      UART_ONE_BIT_SAMPLE_DISABLE;
-
-  huart1.AdvancedInit.AdvFeatureInit =
  8000ba0:	4b06      	ldr	r3, [pc, #24]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000ba2:	2200      	movs	r2, #0
  8000ba4:	625a      	str	r2, [r3, #36]	@ 0x24
-      UART_ADVFEATURE_NO_INIT;
-
-
-  if (HAL_UART_Init(
  8000ba6:	4b05      	ldr	r3, [pc, #20]	@ (8000bbc <MX_USART1_UART_Init+0x58>)
  8000ba8:	0018      	movs	r0, r3
  8000baa:	f001 f93d 	bl	8001e28 <HAL_UART_Init>
  8000bae:	1e03      	subs	r3, r0, #0
  8000bb0:	d001      	beq.n	8000bb6 <MX_USART1_UART_Init+0x52>
-          &huart1)
-      != HAL_OK)
-  {
-    Error_Handler();
  8000bb2:	f000 f85f 	bl	8000c74 <Error_Handler>
-
-
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-}
  8000bb6:	46c0      	nop			@ (mov r8, r8)
  8000bb8:	46bd      	mov	sp, r7
  8000bba:	bd80      	pop	{r7, pc}
@@ -2273,18 +1362,9 @@ static void MX_USART1_UART_Init(void)
  8000bc0:	40013800 	.word	0x40013800
 
 08000bc4 <MX_GPIO_Init>:
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
  8000bc4:	b590      	push	{r4, r7, lr}
  8000bc6:	b089      	sub	sp, #36	@ 0x24
  8000bc8:	af00      	add	r7, sp, #0
-  /* USER CODE BEGIN MX_GPIO_Init_1 */
-
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
  8000bca:	240c      	movs	r4, #12
  8000bcc:	193b      	adds	r3, r7, r4
  8000bce:	0018      	movs	r0, r3
@@ -2292,12 +1372,6 @@ static void MX_GPIO_Init(void)
  8000bd2:	001a      	movs	r2, r3
  8000bd4:	2100      	movs	r1, #0
  8000bd6:	f001 fe5f 	bl	8002898 <memset>
-  /* USER CODE END MX_GPIO_Init_1 */
-
-
-  /* GPIO Ports Clock Enable */
-
-  __HAL_RCC_GPIOA_CLK_ENABLE();
  8000bda:	4b24      	ldr	r3, [pc, #144]	@ (8000c6c <MX_GPIO_Init+0xa8>)
  8000bdc:	695a      	ldr	r2, [r3, #20]
  8000bde:	4b23      	ldr	r3, [pc, #140]	@ (8000c6c <MX_GPIO_Init+0xa8>)
@@ -2312,11 +1386,6 @@ static void MX_GPIO_Init(void)
  8000bf0:	4013      	ands	r3, r2
  8000bf2:	60bb      	str	r3, [r7, #8]
  8000bf4:	68bb      	ldr	r3, [r7, #8]
-
-
-  /* USER CODE BEGIN MX_GPIO_Init_2 */
-
-  __HAL_RCC_GPIOB_CLK_ENABLE();
  8000bf6:	4b1d      	ldr	r3, [pc, #116]	@ (8000c6c <MX_GPIO_Init+0xa8>)
  8000bf8:	695a      	ldr	r2, [r3, #20]
  8000bfa:	4b1c      	ldr	r3, [pc, #112]	@ (8000c6c <MX_GPIO_Init+0xa8>)
@@ -2331,92 +1400,44 @@ static void MX_GPIO_Init(void)
  8000c0c:	4013      	ands	r3, r2
  8000c0e:	607b      	str	r3, [r7, #4]
  8000c10:	687b      	ldr	r3, [r7, #4]
-
-  /*
-   * D0 through D7 are PB0 through PB7.
-   * Start with all LEDs OFF.
-   */
-  HAL_GPIO_WritePin(
  8000c12:	4b17      	ldr	r3, [pc, #92]	@ (8000c70 <MX_GPIO_Init+0xac>)
  8000c14:	2200      	movs	r2, #0
  8000c16:	21ff      	movs	r1, #255	@ 0xff
  8000c18:	0018      	movs	r0, r3
  8000c1a:	f000 fb90 	bl	800133e <HAL_GPIO_WritePin>
-  /*
-   * SW0 / PA0.
-   *
-   * Active-low input.
-   */
-  GPIO_InitStruct.Pin =
  8000c1e:	193b      	adds	r3, r7, r4
  8000c20:	2201      	movs	r2, #1
  8000c22:	601a      	str	r2, [r3, #0]
-      GPIO_PIN_0;
-
-  GPIO_InitStruct.Mode =
  8000c24:	193b      	adds	r3, r7, r4
  8000c26:	2200      	movs	r2, #0
  8000c28:	605a      	str	r2, [r3, #4]
-      GPIO_MODE_INPUT;
-
-  GPIO_InitStruct.Pull =
  8000c2a:	193b      	adds	r3, r7, r4
  8000c2c:	2201      	movs	r2, #1
  8000c2e:	609a      	str	r2, [r3, #8]
-      GPIO_PULLUP;
-
-  HAL_GPIO_Init(
  8000c30:	193a      	adds	r2, r7, r4
  8000c32:	2390      	movs	r3, #144	@ 0x90
  8000c34:	05db      	lsls	r3, r3, #23
  8000c36:	0011      	movs	r1, r2
  8000c38:	0018      	movs	r0, r3
  8000c3a:	f000 f9f3 	bl	8001024 <HAL_GPIO_Init>
-  /*
-   * D0 - D7
-   *
-   * PB0 - PB7
-   */
-  GPIO_InitStruct.Pin =
  8000c3e:	0021      	movs	r1, r4
  8000c40:	187b      	adds	r3, r7, r1
  8000c42:	22ff      	movs	r2, #255	@ 0xff
  8000c44:	601a      	str	r2, [r3, #0]
-      GPIO_PIN_4 |
-      GPIO_PIN_5 |
-      GPIO_PIN_6 |
-      GPIO_PIN_7;
-
-  GPIO_InitStruct.Mode =
  8000c46:	187b      	adds	r3, r7, r1
  8000c48:	2201      	movs	r2, #1
  8000c4a:	605a      	str	r2, [r3, #4]
-      GPIO_MODE_OUTPUT_PP;
-
-  GPIO_InitStruct.Pull =
  8000c4c:	187b      	adds	r3, r7, r1
  8000c4e:	2200      	movs	r2, #0
  8000c50:	609a      	str	r2, [r3, #8]
-      GPIO_NOPULL;
-
-  GPIO_InitStruct.Speed =
  8000c52:	187b      	adds	r3, r7, r1
  8000c54:	2200      	movs	r2, #0
  8000c56:	60da      	str	r2, [r3, #12]
-      GPIO_SPEED_FREQ_LOW;
-
-  HAL_GPIO_Init(
  8000c58:	187b      	adds	r3, r7, r1
  8000c5a:	4a05      	ldr	r2, [pc, #20]	@ (8000c70 <MX_GPIO_Init+0xac>)
  8000c5c:	0019      	movs	r1, r3
  8000c5e:	0010      	movs	r0, r2
  8000c60:	f000 f9e0 	bl	8001024 <HAL_GPIO_Init>
-      &GPIO_InitStruct
-  );
-
-
-  /* USER CODE END MX_GPIO_Init_2 */
-}
  8000c64:	46c0      	nop			@ (mov r8, r8)
  8000c66:	46bd      	mov	sp, r7
  8000c68:	b009      	add	sp, #36	@ 0x24
@@ -2425,29 +1446,10 @@ static void MX_GPIO_Init(void)
  8000c70:	48000400 	.word	0x48000400
 
 08000c74 <Error_Handler>:
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
  8000c74:	b580      	push	{r7, lr}
  8000c76:	af00      	add	r7, sp, #0
-  \details Disables IRQ interrupts by setting the I-bit in the CPSR.
-           Can only be executed in Privileged modes.
- */
-__STATIC_FORCEINLINE void __disable_irq(void)
-{
-  __ASM volatile ("cpsid i" : : : "memory");
  8000c78:	b672      	cpsid	i
-}
  8000c7a:	46c0      	nop			@ (mov r8, r8)
-  /* USER CODE BEGIN Error_Handler_Debug */
-
-  __disable_irq();
-
-
-  while (1)
  8000c7c:	46c0      	nop			@ (mov r8, r8)
  8000c7e:	e7fd      	b.n	8000c7c <Error_Handler+0x8>
 
