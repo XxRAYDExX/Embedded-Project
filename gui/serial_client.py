@@ -48,8 +48,8 @@ class SerialGameClient:
             return
 
         try:
-            self.connection = serial.Serial(
-                port=self.port,
+            self.connection = serial.serial_for_url(
+                self.port,
                 baudrate=BAUD_RATE,
                 bytesize=serial.EIGHTBITS,
                 parity=serial.PARITY_NONE,
